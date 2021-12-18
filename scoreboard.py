@@ -27,8 +27,11 @@ class Scoreboard():
             self.highscore = self.score
             self.write_highscore()
             print(f"You beat the highscore! The new highscore is: {self.score}")
-            # Test burst effect
+            # Burst effect on Highscore
             self.game.effects.append(Burst(self.game, self.game.current_block.x+(self.game.current_block.width//2), self.game.current_block.y+(self.game.current_block.height//2), 50))
+        # If at max score aka win
+        if self.score > self.game.max_score:
+            self.game.win()
 
     def draw_background(self):
         # Draw banner
@@ -53,16 +56,26 @@ class Scoreboard():
         image = self.font.render(f"{self.highscore}", True, color)
         self.game.window.blit(image, (x, y))
 
-    def losing_screen(self):
-        # Display Lose Text
+    def display_screen(self, screen_type):
+        """Display different screens such as win or lose"""
         font = pygame.font.SysFont(None, 54)
-        image = font.render("YOU LOSE!", True, "red")
+        # Losing Text
+        if screen_type == "lose":
+            text_color = "red"
+            image = font.render("YOU LOSE!", True, text_color)
+        # Winning Text
+        elif screen_type == "win":
+            text_color = "green"
+            image = font.render("YOU WIN!", True, text_color)
+        else:
+            return ValueError("Bad screen_type argument!")
+
         self.game.window.blit(image, ((self.game.width//2)-100, 200, 100, 100))
         #Display Final Score text
-        image2 = self.font.render("Final Score:", True, "red")
+        image2 = self.font.render("Final Score:", True, text_color)
         self.game.window.blit(image2, ((self.game.width//2)-120, self.game.height//2+47, 100, 100))
         #Display Final score Integer
-        self.display_score(x=(self.game.width//2)+120, y=(self.game.height//2)+50, color="red")
+        self.display_score(x=(self.game.width//2)+120, y=(self.game.height//2)+50, color=text_color)
     
     def draw(self):
         # Draw Scoreboard background

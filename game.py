@@ -12,6 +12,7 @@ class Game():
         self.difficulty_mult = 1.1
         self.level = 1
         self.bgcolor = ((0,0,20))
+        self.max_score = 36
 
         # Create Pygame window
         self.window = pygame.display.set_mode((self.width, self.height))
@@ -41,11 +42,19 @@ class Game():
         self.level = 1
         self.last_block, self.current_block = self.start()
 
-    def end(self):
-        """Show end game items and restart"""
+    def lose(self):
+        """Show lose game items and restart"""
         pygame.time.delay(1000)
-        self.scoreboard.losing_screen()
-        self.scoreboard.compare_scores()
+        self.scoreboard.display_screen("lose")
+        pygame.display.update()
+        pygame.time.delay(3000)
+        # dont end the game and restart it instead!
+        self.restart()
+
+    def win(self):
+        """Show win game items and restart"""
+        pygame.time.delay(1000)
+        self.scoreboard.display_screen("win")
         pygame.display.update()
         pygame.time.delay(3000)
         # dont end the game and restart it instead!
@@ -58,8 +67,10 @@ class Game():
             block.frozen = True
 
         # How far you missed from the center
-        # Lose if past half way of the lower block
+        # Lose if past half way of the block below
         missed_margin = abs(self.current_block.x - self.last_block.x)
+        # Check if win or highscore
+        self.scoreboard.compare_scores()
         if  missed_margin < self.error_margain:
             self.level += 1
             self.scoreboard.score += 1
@@ -68,9 +79,8 @@ class Game():
             self.current_block = new_block
             new_block.velocity = (self.last_block.velocity * self.difficulty_mult)
             self.blocks.append(new_block)
-            self.scoreboard.compare_scores()
         else:
-            self.end()
+            self.lose()
 
     def start(self):
         """Setup beginning block and freeze it, and setup player block"""
